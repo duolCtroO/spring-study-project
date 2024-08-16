@@ -4,6 +4,7 @@ import oort.cloud.studyproject.payment.ExRateProvider;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 
 public class CachedExProvider implements ExRateProvider {
@@ -17,7 +18,7 @@ public class CachedExProvider implements ExRateProvider {
     }
 
     @Override
-    public BigDecimal getExRate(String currency) throws IOException {
+    public BigDecimal getExRate(String currency){
         if(cachedExRate == null || cachedExpiryTime.isBefore(LocalDateTime.now())){
             cachedExRate = this.exRateProvider.getExRate(currency);
             cachedExpiryTime = LocalDateTime.now().plusSeconds(3);

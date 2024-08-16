@@ -2,22 +2,22 @@ package oort.cloud.studyproject.payment;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 public class PaymentService {
     private final ExRateProvider exRateProvider;
+    private final Clock clock;
 
-    public PaymentService(ExRateProvider exRateProvider) {
+    public PaymentService(ExRateProvider exRateProvider, Clock clock) {
         this.exRateProvider = exRateProvider;
+        this.clock = clock;
     }
 
-    public Payment prepare(Long orderId, String currency, BigDecimal foreignCurrencyAmount) throws IOException {
+    public Payment prepare(Long orderId, String currency, BigDecimal foreignCurrencyAmount){
         BigDecimal exRate = exRateProvider.getExRate(currency);
-        BigDecimal convertedAmount = foreignCurrencyAmount.multiply(exRate);
-        LocalDateTime validUtil = LocalDateTime.now().plusMinutes(30);
-
-        return new Payment(orderId, currency, foreignCurrencyAmount,exRate, convertedAmount,
-                validUtil);
+        return Payment.prepare(orderId, currency, foreignCurrencyAmount, exRate, LocalDateTime.now(clock));
     }
 
 }
