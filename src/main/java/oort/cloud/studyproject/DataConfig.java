@@ -1,11 +1,10 @@
 package oort.cloud.studyproject;
 
 import jakarta.persistence.EntityManagerFactory;
-import oort.cloud.studyproject.data.OrderRepository;
-import org.hibernate.boot.model.internal.EmbeddableBinder;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -13,6 +12,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 
@@ -25,27 +25,27 @@ public class DataConfig {
         return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
     }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
-        LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
-        emf.setDataSource(dataSource());
-        emf.setPackagesToScan("oort.cloud.studyproject");
-        emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter(){{
-            setDatabase(Database.H2);
-            setGenerateDdl(true);
-            setShowSql(true);
-        }});
-        return emf;
-    }
+//    @Bean
+//    public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
+//        LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
+//        emf.setDataSource(dataSource());
+//        emf.setPackagesToScan("oort.cloud.studyproject");
+//        emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter(){{
+//            setDatabase(Database.H2);
+//            setGenerateDdl(true);
+//            setShowSql(true);
+//        }});
+//        return emf;
+//    }
+//
+//    @Bean
+//    public BeanPostProcessor persistenceAnnotationBeanPostProcessor(){
+//        return new PersistenceAnnotationBeanPostProcessor();
+//    }
 
     @Bean
-    public BeanPostProcessor persistenceAnnotationBeanPostProcessor(){
-        return new PersistenceAnnotationBeanPostProcessor();
-    }
-
-    @Bean
-    public JpaTransactionManager transactionManager(EntityManagerFactory emf){
-        return new JpaTransactionManager(emf);
+    public PlatformTransactionManager transactionManager(){
+        return new DataSourceTransactionManager(dataSource());
     }
 
 
